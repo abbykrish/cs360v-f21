@@ -19,68 +19,10 @@ For Lab-1, you will first set up your working environment and then implement cod
 + Deadline: 27th Sept 2020
 ```
 
-## 1. Getting Started
+## 1. Getting started 
 
-You may use your laptops / computers for this project. Please enable qemu-kvm on your machines. Alternatively you can also use any of the following (gilligan) CS machines. As you need access to KVM module for this project, you cannot use other CS machines.
-- ginger
-- lovey
-- mary-ann
-- skipper
-- the-professor
-- thurston-howell-iii
+Your environment should be set up from Lab 0. We will making changes in the same codebase. If you did not recieve full marks for the previous lab, please reach out to the TA to get the correct implementation of the previous files.
 
-For lab-1, you will use a virtual machine with Ubuntu 16.04 operating system. Follow the instructions below for
-1. Setting up a VM and other essentials
-2. Running JOS code for project-1
-
-#### Setting up a Virtual Machine and Other Essentials
-
-1. Download the compressed [VM image](https://www.cs.utexas.edu/~vijay/teaching/project1.tar.gz) (3.4 GB) on CS gilligan machines or your personal laptops (with QEMU and KVM enabled). The uncompressed VM image (8.8 GB) is available for download [here](http://www.cs.utexas.edu/~soujanya/project1-vm.qcow2).
-```
-$ wget https://www.cs.utexas.edu/~vijay/teaching/project1.tar.gz
-```
-
-
-2. Now start up a VM that listens on a specific port using the following command. To avoid contention over ports, use `<port-id> = 5900 + <team-number>`. For example, if your group-id is 15, your port-id will be 5915.
-```
-$ qemu-system-x86_64 -cpu host -drive file=<path-to-qcow2-image>,format=qcow2 -m 512 -net user,hostfwd=tcp::<port-id>-:22 -net nic -nographic -enable-kvm
-```
-
-3. On another terminal, connect to the VM using the following command. On connecting, enter the password as `abc123`.
-```
-$ ssh -p <port-id> cs378@localhost
-```
-
-4. Copy your public *and* private ssh keys from the CS lab machine or from your local machine into the VM.
-Alternatively, you can generate a new key-pair on the VM using `ssh-keygen -t rsa`. You should send the public key in the VM to the TAs.
-```
-$ scp -P <port-id> $HOME/.ssh/id_rsa.pub cs378@localhost:~/.ssh/id_rsa.pub
-$ scp -P <port-id> $HOME/.ssh/id_rsa cs378@localhost:~/.ssh/id_rsa
-```
-
-5. Verify that you have gdb 7.7 and gcc 4.8 in the VM. Also cross check that you have python-3.4 installed or in your $HOME directory. In case you need to install any of them, follow the instructions on the [installations](https://github.com/vijay03/cs360v-f20/blob/master/installation.md) page. Note that to exit from QEMU VM press `Ctrl a` then `x`.
-
-6. We will be using gitolite to manage access for different groups. Inside the VM, clone the gitolite repo using
-```
-git clone cs378-vijay@git.cs.utexas.edu:group<groupnumber>-project1
-```
-The repo will contain a project-1 folder which has the source code for the project.
-You can use git to commit and push your code changes to the gitolite repo.
-You can also get started with the lab without having access to gitolite. Find the project-1 code [here](https://github.com/vijay03/cs360v-f20/blob/master/project-1.tar.gz) and untar it and get access to the project-1 code.
-
-#### Running JOS VMM
-
-Compile the code using the command:
-```
-$ make clean
-$ make
-```
-Please note that the compilation works with gcc version <= 5.0.0. The Makefile uses gcc 4.8.0, which is present in the gilligan lab machines. Please install gcc-4.8 if you don't have it installed already.
-
-You can run the vmm from the shell by typing:
-```
-$ make run-vmm-nox
-```
 
 ## 2. Coding Assignment (Making a Guest Environment)
 

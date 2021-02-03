@@ -17,7 +17,7 @@ struct Env {
         envid_t env_id;             // Unique environment identifier
         enum EnvType env_type;      // Indicates special system environments
         unsigned env_status;        // Status of the environment
-        uint32_t env_runs;          // Number of times environment has run
+        <TO BE IMPLEMENTED BY YOU>          // Number of times environment has run
         pml4e_t *env_pml4e;         // Kernel virtual address of page map level-4
 };
 ```
@@ -34,5 +34,7 @@ Here's what the Env fields are for:
      4. ENV_NOT_RUNNABLE: Indicates that the Env structure represents a currently active environment, but it is not currently ready to run: for example, because it is waiting for an interprocess communication (IPC) from another environment.
      5. ENV_DYING: Indicates that the Env structure represents a zombie environment. A zombie environment will be freed the next time it traps to the kernel.
 * `env_pml4e`: This variable holds the kernel virtual address of this environment's top-level (4th level) page directory. Like a Unix process, a JOS environment couples the concepts of "thread" and "address space". The thread is defined primarily by the saved registers (the env_tf field), and the address space is defined by the PML4,page directory pointer, page directory and page tables pointed to by env_pml4e and env_cr3. To run an environment, the kernel must set up the CPU with both the saved registers and the appropriate address space.
+* `env_runs`: This variable should hold the number of times an environment gets run. It will be implemented by you, in order to get you familar with navigating environment code. 
+
 
 Note that in Unix-like systems, individual environments have their own kernel stacks. In JOS, however, only one environment can be active in the kernel at once, so JOS needs only a single kernel stack.

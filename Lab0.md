@@ -109,8 +109,9 @@ An IRET instruction returns from the OS to the application program which made th
 
 Observe the register values, and note them down. 
 
-Which register contains the return value? What is the value you see? Is this an address or a constant value? 
-Which register contains the next assembly instruction to execute? What is the value you see? Is this an address or a constant value? 
+1. Which register contains the return value? What is the value you see? Is this an address or a constant value? 
+
+2. Which register contains the next assembly instruction to execute? What is the value you see? Is this an address or a constant value? 
 
 Using the answer from the previous question, what are the next 5 instructions that will be executed? What are the hex codes of those functions? 
 
@@ -135,6 +136,8 @@ Why might this throw an error?
 
 
 ### Track number of runs for an env
+
+NOTE: All Lab 0 hints are in the codebase `Hint, Lab 0`. It is important to visit each one, for they all indicate a place where you must make an edit. 
 
 In JOS the terms "environment" and "process" are interchangeable - they roughly have the same meaning. We introduce the term "environment" instead of the traditional term "process" in order to stress the point that JOS environments do not provide the same semantics as UNIX processes, even though they are roughly comparable.
 

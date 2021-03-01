@@ -16,21 +16,45 @@ The README series is broken down into 4 parts:
 
 For Lab-1, you will first set up your working environment and then implement code for making the guest environment.
 ```diff
-+ Deadline: 27th Sept 2020
++ Deadline: TBA
 ```
 
 ## 1. Getting started 
 
 Your environment should be set up from Lab 0. We will making changes in the same codebase. If you did not recieve full marks for the previous lab, please reach out to the TA to get the correct implementation of the previous files.
 
+## 2. Code Comprehension Exercise 
 
-## 2. Coding Assignment (Making a Guest Environment)
+Before starting the coding portion of this assignment, we are going to observe certain things about the code base first.
+
+The first thing you should do is look through the helper functions in `inc/x86.h`, `inc/vmx.h`, and `vmm/vmx.h`
+
+The first method you will be editing is `vmx_check_support()` in `vmm/vmx.c`. The function currently calls the `cpuid` function. The parameters to the function are the addresses of the integers initialized in the line before. Set a breakpoint at the `cpuid()`function call, and step through the function. 
+
+The `cpuid` assembly instruction can be used determine the availability of different processor features. Depending on the values in the registers EAX, EBX, ECX and EDX, you can query for all kinds of information about the processor. 
+
+1. How is the function providing values back to you to use? 
+
+2. What are the results of the function? 
+
+3. Change the info value to 0, and output the return values out as a string instead of as integers. What do you observe? 
+
+There is a field in each Env struct for another struct callled VmxGuestInfo. 
+
+1. What kind of information does this struct hold? 
+
+2. From the Intel guide, find out what the vmcs pointer in this struct stands for, and what it purpose it serves. 
+
+3. What assembly instruction initializes the vmcs pointer? 
+
+## 3. Coding Assignment (Making a Guest Environment)
 
 Currently, `make run-vmm-nox` will panic the kernel as the code that detects support for vmx and extended page table support is not yet implemented. You will see the following error and you will fix this in Lab-1:
 ```
 kernel panic on CPU 0 at ../vmm/vmx.c:65: vmx_check_support not implemented
 ```
 
+Background:
 The JOS VMM is launched by a fairly simple program in user/vmm.c. This program,
 - Calls a new system call to create an environment (similar to a process) that runs in guest mode (sys_env_mkguest).
 - Once the guest is created, the VMM then copies the bootloader and kernel into the guest's physical address space.
@@ -40,7 +64,7 @@ You will be implementing key pieces of the supporting system calls for the JOS V
 
 Before diving into the implementation details, You may want to skim the 
 - JOS bookkeeping code for sys_env_mkguest that is already provided for you in kern/syscall.c
-- Code in kern/env.h to understand how guest/regular environments are managed
+- Code in kern/env.h to understand how guest/regular environments are managed. You should have become acquainted with this implementation in Lab 0.
 
 Note that a major difference between a guest and a regular environment is that a guest has its type set to ENV_TYPE_GUEST. Additionally guest has a VmxGuestInfo structure and a vmcs structure associated with it.
 
@@ -50,7 +74,7 @@ The vmm directory includes the kernel-level support needed for the VMM--primaril
 
 #### Checking Support for VMX and Extended Paging
 
-Your first task will be to implement detection that the CPU supports vmx and extended paging. You will have to check the output of the cpuid instruction and check the values in certain model specific registers (MSRs). To understand how to implement the checks for the vmx and extended paging support, read Chapters 23.6, 24.6.2, and Appendices A.3.2-3 from the [Intel Manual](http://www.cs.utexas.edu/~vijay/cs378-f17/projects/64-ia-32-architectures-software-developer-vol-3c-part-3-manual.pdf).
+Your first task will be to implement detection that the CPU supports vmx and extended paging. Remember the output that you checked from the cpuid instruction in Part 1. You now will interpret those values you noted down to check whether the CPU supports vmx and extended paging. To understand how to implement the checks for the vmx and extended paging support, read Chapters 23.6, 24.6.2, and Appendices A.3.2-3 from the [Intel Manual](http://www.cs.utexas.edu/~vijay/cs378-f17/projects/64-ia-32-architectures-software-developer-vol-3c-part-3-manual.pdf).
 
 Once you have read these sections, you will understand how to check support for vmx and extended paging. Now, implement the vmx_check_support() and vmx_check_ept() functions in vmm/vmx.c. Please read the hints above these functions to spot code that is already provided, for example, to read MSRs.
 

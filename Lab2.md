@@ -35,10 +35,14 @@ What is this function doing? It is described in the function header, but try to 
 
 4. The first function you implement in this project will have you check many errors, prior to the actual function logic. What are some of the reasons why we must do this in OS level code, the user never sees? (looking for something about isolation, etc.)
 
-Recommended files to look through before starting: 
+Recommended files to look through before starting:
+
 `inc/memlayout.h` describes and provides an ASCII image of the virtual memory map. 
+
 `inc/mmu.h` describes how to parse information about a page from the address itself 
+
 `vmm/ept.h` has function declarations that will be helpful throughout, and a macro for page table walks 
+
 `lib/fd.c` has system calls that can be used to read files 
 
 ### Part-2 Coding Assignment

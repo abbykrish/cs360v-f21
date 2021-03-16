@@ -59,7 +59,7 @@ On a high level, in this section, each page of the kernel as well as the bootloa
 to the guest at particular physical addresses, and thus the kernel and the bootloader becomes available to the guest for when the guest is launched.
 
 Here is a graphic of the workflow, with descriptions below: 
-![Image of Workflow](https://github.com/abbykrish/cs360v-f21/blob/main/figures/workflow.png)
+![Image of Workflow](https://github.com/abbykrish/cs360v-f21/blob/main/figures/workflow.jpg)
 
 For the bootloader, we use map_in_guest directly, since the bootloader is only 512 bytes,
 whereas the kernel's ELF header must be read by copy_guest_kern_gpa, which should then call map_in_guest for each segment.

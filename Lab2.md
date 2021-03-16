@@ -19,44 +19,66 @@ The high-level difference between `sys_ept_map` and `sys_page_map` is whether th
 Skim Chapter 28.2 of the [Intel manual](http://www.cs.utexas.edu/~vijay/cs378-f17/projects/64-ia-32-architectures-software-developer-vol-3c-part-3-manual.pdf)
 to familiarize yourself with low-level EPT programming. Several helpful definitions have been provided in vmm/ept.h.
 
-### Part-1 Coding Assignment
+### Part-1 Pre-lab Questions 
+1. What does it mean for there to be EPT support, vs. software driven virtualization? 
+How do we know our VM has EPT support? 
+
+2. ELF Headers:  
+What is an ELF header? 
+What does it do? 
+Can you find what the ELF format for our VM is?
+
+3. Set a breakpoint at the function `load_icode()` in env.c
+What do you notice about the Proghdr object? 
+What kinds of metadata does the object have? 
+What is this function doing? It is described in the function header, but try to put it in your own words. 
+
+4. The first function you implement in this project will have you check many errors, prior to the actual function logic. What are some of the reasons why we must do this in OS level code, the user never sees? (looking for something about isolation, etc.)
+
+Recommended files to look through before starting: 
+`inc/memlayout.h` describes and provides an ASCII image of the virtual memory map. 
+`inc/mmu.h` describes how to parse information about a page from the address itself 
+`vmm/ept.h` has function declarations that will be helpful throughout, and a macro for page table walks 
+`lib/fd.c` has system calls that can be used to read files 
+
+### Part-2 Coding Assignment
 
 Implement `sys_ept_map()` in kern/syscall.c, as well as `ept_lookup_gpa()` and `ept_map_hva2gpa()` in vmm/ept.c.
 Once this is complete, you should have complete support for nested paging.
 The hints for implementing these functions are present as comments in the code.
 
+
 At this point, you have enough host-level support function to map the guest bootloader and kernel into the guest VM.
 For mapping the guest bootloader and kernel, you will need to read the kernel's ELF headers and copy the segments into the guest.
 
-### Part-2 Coding Assignment
+### Part-3 Coding Assignment
 
 Implement `copy_guest_kern_gpa()` and `map_in_guest()` in user/vmm.c.
+
+On a high level, in this section, each page of the kernel as well as the bootloader is mapped from the host
+to the guest at particular physical addresses, and thus the kernel and the bootloader becomes available to the guest for when the guest is launched.
+
+Here is a graphic of the workflow, with descriptions below: 
+![Image of Workflow](https://github.com/abbykrish/cs360v-f21/blob/main/figures/workflow.png)
+
 For the bootloader, we use map_in_guest directly, since the bootloader is only 512 bytes,
 whereas the kernel's ELF header must be read by copy_guest_kern_gpa, which should then call map_in_guest for each segment.
 
 The workflow (and hints) for this part is as follows:
-1. `copy_guest_kern_gpa()` reads the ELF header from the kernel executable (using system calls present in lib/fd.c) into the struct Elf.
-The kernel ELF contains multiple segments which must be copied from the host to the guest. So this function loops over all the segment headers
-(i.e. program headers) and calls `map_in_guest()` for each of these segments. Each segment also contains the `gpa` that should be passed to `map_in_guest()`
+1. `copy_guest_kern_gpa()` reads the ELF header from the kernel executable into the struct Elf. 
+The kernel ELF contains multiple segments which must be copied from the host to the guest. This function is similar to the one observed in the prelab but has to call something other than memcpy() to map the memory because we are in the virtual guest. 
 
-2. `map_in_guest()` breaks down each segment in number of pages, loads each page into `UTEMP`, and
-calls `sys_ept_map()` for each page by passing the `UTEMP` as the srcva.
+
+2. `map_in_guest()` breaks down each segment in number of pages, and calls `sys_ept_map()` for each page. You cannot pass in the page directly, but rather will have to use a TEMP variable. This is defined as a macro in `memlayout.h`
 
 3. `sys_ept_map()` first walks the page table levels at the host (given the srcva), and then gets
 the physical page corresponding to the virtual address srcva (i.e. it returns the struct PageInfo).
-The corresponding virtual address of this page is then computed using `page2kva()`, which basically
-acts as the hva in the call to `ept_map_hva2gpa()`.
+The corresponding virtual address of this page is then computed using `page2kva()`, which basically acts as the hva in the call to `ept_map_hva2gpa()`.
 
-4. `ept_map_hva2gpa()` does a walk on the page table levels at the guest (given the gpa) using `ept_lookup_gpa()`
-and then gets a page table entry at level 0 corresponding to the gpa. This function then inserts the physical address
-corresponding to the hva, in the page table entry returned by `ept_lookup_gpa()`.
+4. `ept_map_hva2gpa()` does a walk on the page table levels at the guest (given the gpa) using `ept_lookup_gpa()` and then gets a page table entry at level 0 corresponding to the gpa. This function then inserts the physical address corresponding to the hva, in the page table entry returned by `ept_lookup_gpa()`.
 
 5. `ept_lookup_gpa()` does the walk on the page table hierarchy at the guest and returns the page table entry
-corresponding to a gpa. It does this by making use of the `ADDR_TO_IDX` macro in vmm/ept.h starting from the
-top-most EPT level, till it reaches the page table entry at level 0 which points to the actual page.
-
-On a high level, in this section, each page of the kernel as well as the bootloader is mapped from the host
-to the guest at particular physical addresses, and thus the kernel and the bootloader becomes available to the guest for when the guest is launched.
+corresponding to a gpa. It calculates the next index using the address and iterates until it reaches the page table entry at level 0 which points to the actual page.
 
 Once this is complete, the kernel will attempt to run the guest, and will panic because asm_vmrun is incomplete. This error looks like:
 ```
@@ -64,6 +86,8 @@ kernel panic on CPU 0 at ../vmm/vmx.c:637: asm_vmrun is incomplete
 ```
 
 ### Part-3 vmlaunch and vmresume
+
+TODO: FIX THIS EXERCISE
 
 In this exercise, you will use the assembly code below to complete the `asm_vmrun()` that launches the VM.
 The code below will help you use the vmwrite instruction to set the host stack pointer,
@@ -73,9 +97,8 @@ In order to facilitate interaction between the guest and the JOS host kernel, we
 Thus, you will also write assembly to copy the relevant guest registers to and from this trapframe struct.
 
 Skim Chapter 26 of the [Intel manual](http://www.cs.utexas.edu/~vijay/cs378-f17/projects/64-ia-32-architectures-software-developer-vol-3c-part-3-manual.pdf)
-to familiarize yourself with the vmlaunch and vmresume instructions. Complete the assembly code in `asm_vmrun()` in vmm/vmx.c.
-Also remove the panic in the call to `asm_vmrun()`. You can try implementing `asm_vmrun` yourself or you can use the code below to complete the function.
-For this part of the lab assignment you will submit a readme `assembly_code.md` that has your understanding of the assembly code below.
+to familiarize yourself with the vmlaunch and vmresume instructions. 
+Remove the panic in the call to `asm_vmrun()`. There are instructions in the code of what lines you must add or fix. 
 
 ```
 void asm_vmrun(struct Trapframe *tf) {
@@ -218,6 +241,7 @@ void asm_vmrun(struct Trapframe *tf) {
 
 Once this is complete, you should be able to run the VM until the guest attempts a vmcall instruction, which traps to the host kernel.
 Because the host isn't handling traps from the guest yet, the VM will be terminated. You should see an error like:
+
 ```
 Unhandled VMEXIT, aborting guest.
 ```
@@ -227,5 +251,4 @@ Unhandled VMEXIT, aborting guest.
 Please submit your code for part-1 and part-2 and the assembly_code.md readme via gitolite. To mark your submission, please have a commit labelled "Lab 2 submission. 0/1/.. slip days used.". You can modify and add a dummy file for this commit if you want. We will consider the last such commit for evaluation. The deadline for lab-2 of project-1 is: 
 
 ```diff
-+ October 19th, 11:59 PM CST
 ```

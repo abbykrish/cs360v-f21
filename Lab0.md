@@ -21,58 +21,29 @@ For Lab-0, you will first set up your working environment and then implement cod
 
 ## 1. Getting Started
 
-You may use your laptops / computers for this project. Please enable qemu-kvm on your machines. Alternatively you can also use any of the following (gilligan) CS machines. As you need access to KVM module for this project, you cannot use other CS machines.
-- ginger
-- lovey
-- mary-ann
-- skipper
-- the-professor
-- thurston-howell-iii
+You will need to use your laptop for this project. Because the lab computers do not have easy root access, and we are trying to write a hypervisor, it is easiest to use a class VM for a standardized project experience. 
 
-For lab-0, you will use a virtual machine with Ubuntu 16.04 operating system. Follow the instructions below for
+
+For lab-0, you will use a virtual machine with the Debian Jessie operating system. Follow the instructions below for
 1. Setting up a VM and other essentials
 2. Running JOS code for project-1
 
 #### Setting up a Virtual Machine and Other Essentials
 
-1. Download the compressed [VM image](https://www.cs.utexas.edu/~vijay/teaching/project1.tar.gz) (3.4 GB) on CS gilligan machines or your personal laptops (with QEMU and KVM enabled). The uncompressed VM image (8.8 GB) is available for download [here](http://www.cs.utexas.edu/~soujanya/project1-vm.qcow2).
-```
-$ wget https://www.cs.utexas.edu/~vijay/teaching/project1.tar.gz
-```
+1. Download the compressed [VM image](https://www.cs.utexas.edu/~vijay/teaching/project1.tar.gz) (3.4 GB) on your personal laptops (with QEMU and KVM enabled). 
 
+2. Download a Virtual Machine software: VMWare Fusion [here for students](https://my.vmware.com/web/vmware/evalcenter?p=fusion-player-personal) or Virtual Box. 
+3. Load ova into whichever software you are using [link](https://help.okta.com/en/prod/Content/Topics/Access-Gateway/deploy-vmwareworkstation.htm)
+4.  Begin running VM. To log into the VM, you can either use
+username: user
+password: user
 
-2. Now start up a VM that listens on a specific port using the following command. To avoid contention over ports, use `<port-id> = 5900 + <team-number>`. For example, if your group-id is 15, your port-id will be 5915.
-```
-$ qemu-system-x86_64 -cpu host -drive file=<path-to-qcow2-image>,format=qcow2 -m 512 -net user,hostfwd=tcp::<port-id>-:22 -net nic -nographic -enable-kvm
-```
+username: root
+password: root
 
-3. On another terminal, connect to the VM using the following command. On connecting, enter the password as `abc123`.
-```
-$ ssh -p <port-id> cs378@localhost
-```
-
-If you see an error that says something similar to `Could not set up host forwarding rule 'tcp::5905-:22'`, there may be some other program that is listening to the same port as yours. 
-
-To figure out if this is the case, 
-`lsof -i:5905` or `nc -l -p  5905` will tell you if something is running on that port.
-
-
-4. Copy your public *and* private ssh keys from the CS lab machine or from your local machine into the VM.
-Alternatively, you can generate a new key-pair on the VM using `ssh-keygen -t rsa`. You should send the public key in the VM to the TAs.
-```
-$ scp -P <port-id> $HOME/.ssh/id_rsa.pub cs378@localhost:~/.ssh/id_rsa.pub
-$ scp -P <port-id> $HOME/.ssh/id_rsa cs378@localhost:~/.ssh/id_rsa
-```
-
-5. Verify that you have gdb 7.7 and gcc 4.8 in the VM. Also cross check that you have python-3.4 installed or in your $HOME directory. In case you need to install any of them, follow the instructions on the [installations](https://github.com/vijay03/cs360v-f20/blob/master/installation.md) page. Note that to exit from QEMU VM press `Ctrl a` then `x`.
-
-6. We will be using gitolite to manage access for different groups. Inside the VM, clone the gitolite repo using
-```
-git clone cs378-vijay@git.cs.utexas.edu:group<groupnumber>-project1
-```
-The repo will contain a project-1 folder which has the source code for the project.
-You can use git to commit and push your code changes to the gitolite repo.
-You can also get started with the lab without having access to gitolite. Find the project-1 code [here](https://github.com/vijay03/cs360v-f20/blob/master/project-1.tar.gz) and untar it and get access to the project-1 code.
+5.  Run `ip addr` to retrieve the IP address of the machine. 
+6.  Open a new terminal tab on your computer, and ssh into the machine. You can do this with `ssh -p 22 user@IP_ADDRESS`
+7.  You can locate into the project folder now. It should be available on your VM, with the necessary libraries. 
 
 #### Running JOS VMM
 

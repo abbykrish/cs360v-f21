@@ -114,9 +114,9 @@ In JOS the terms "environment" and "process" are interchangeable - they roughly 
 
 [This guide](https://github.com/vijay03/cs360v-f21/blob/master/environments.md), linked at the beginning of the project, provides an in depth introduction into environments. 
 
-In this part of the project, we want to be able to keep track of number of times environment has run, as an important piece of metadata.
+In this part of the project, we want to be able to keep track of number of times environment has run, as an important piece of metadata. Add a new field to the struct declaration of `Env` called `env_runs` in order to track this information. 
 
-Add a new field to the struct declaration of `Env` called `env_runs` in order to track this information. 
+Again, check all of the `Hint, Lab 0` places to update and use the `env_runs` variable!!
 
 ### Fix implementation of envid2env() in inc/env.c
 
@@ -125,7 +125,7 @@ Throughout these Labs in project_1, you will have to use a helper function, envi
 Right now, this function has a few bugs in it. 
 1. If envid is zero, the function should return the current environment.
 2. It incorrectly looks up the env in the envs array. 
-3. It incorrectly fills the **env_store with the correct env reference. 
+3. It incorrectly fills the **env_store with a null value. 
 
 Using env macros and information in inc/env.h and your knowledge of C references, fix these three bugs. 
 

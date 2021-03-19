@@ -4,7 +4,15 @@ The equivalent event to a trap from an application to the operating system is ca
 
 Similar to issuing a system call (e.g., using the int or syscall instruction), a guest can programmatically trap to the host using the vmcall instruction (sometimes called hypercalls). The current JOS guest uses three hypercalls: one to read the e820 map, which specifies the physical memory layout to the OS; and two to use host-level IPC. We will handle the first hypercall in this lab.
 
-#### Part-1 Multi-boot map (aka e820)
+#### Part-1 Pre-lab 
+1. Name 3 different events that might cause a vmexit. You can look through some of the reasons in `vmm/vmx.c`, but it may be easier to reason this from your knowledge of operating systems and virtual machines 
+2. What overhead costs exist when you do a VM exit?
+	2a. Give an example in the codebase of one of these computation costs. Provide the function and file, and an explanation
+3. Recall that the %cr3 register holds the physical address of a page table. An OS kernel needs to change %cr3 during context switches to switch page tables. Does our VM, which has hardware supported page tables for virtual machines also have to do this? Using GDB, note the values of %cr3 before and after a VM Exit is executed 
+4. In Part-2 of this project, you will be responsible for filling in pieces in the codebase to boot the VM. What is a bootloader? How do we ensure isolation between machines booting in memory? 
+
+
+#### Part-2 Multi-boot map (aka e820)
 
 JOS is "told" the amount of physical memory it has by the bootloader. JOS's bootloader passes the kernel a multiboot info structure which possibly contains the physical memory map of the system. The memory map may exclude regions of memory that are in use for reasons including IO mappings for devices (e.g., the "memory hole"), space reserved for the BIOS, or physically damaged memory. For more details on how this structure looks and what it contains, refer to the [specification](https://www.gnu.org/software/grub/manual/multiboot/multiboot.html). A typical physical memory map for a PC with 10 GB of memory looks like below.
 ```
@@ -18,10 +26,13 @@ JOS is "told" the amount of physical memory it has by the bootloader. JOS's boot
         address: 0x0000000100000000, length: 0x00000001a0000000, type: USABLE
 ```
 
-For the JOS guest, rather than emulate a BIOS, we will simply use a vmcall to request a "fake" memory map. Complete the implementation of `vmexit()` by identifying the reason for the exit from the VMCS. You may need to search Chapter 27 of the [Intel manual](http://www.cs.utexas.edu/~vijay/cs378-f17/projects/64-ia-32-architectures-software-developer-vol-3c-part-3-manual.pdf) to solve this part of the exercise.
+For the JOS guest, rather than emulate a BIOS, we will simply use a vmcall to request a "fake" memory map. 
+
+Complete the implementation of `vmexit()` by identifying the reason for the exit from the VMCS. You may need to search Chapter 27 of the [Intel manual](http://www.cs.utexas.edu/~vijay/cs378-f17/projects/64-ia-32-architectures-software-developer-vol-3c-part-3-manual.pdf) to solve this part of the exercise.
+
 Implement the `VMX_VMCALL_MBMAP` case of the function `handle_vmcall()` in vmm/vmexits.c. Also, be sure to advance the instruction pointer so that the guest doesn't get in an infinite loop.
 
-#### Part-2 CPUID
+#### Part-3 CPUID
 
 Once the guest gets a little further in boot, it will attempt to discover whether the CPU supports long mode, using the cpuid instruction. Our VMCS is configured to trap on this instruction, so that we can emulate it---hiding the presence of vmx, since we have not implemented emulation of vmx in software. Now you will see an error of the form `kernel panic on CPU 0 at ../vmm/vmexits.c:262: cpuid not implemented`.
 
@@ -33,5 +44,4 @@ Implement `handle_cpuid()` in vmm/vmexits.c. `handle_cpuid()` should emulate a c
 Please submit your code for part-1 and part-2 via gitolite. To mark your submission, please have a commit labelled "Lab 3 submission. 0/1/.. slip days used.". You can modify and add a dummy file for this commit if you want. We will consider the last such commit for evaluation. The deadline for lab-3 of project-1 is:
 
 ```diff
-+ October 26th, 11:59 PM CST
 ```

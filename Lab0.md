@@ -71,9 +71,9 @@ make run-vmm-nox-gdb
 NOTE: For this lab, you have to use REMOTE DEBUGGING via GDB. It will appear like the command is hanging when run, but you must open a new terminal tab to run gdb. In the gdb prompt, run:
 
 ```
-target remote localhost:25001
+target remote localhost:25000
 ```
-Port 25002 should also work.
+
 
 You may see 
 ```

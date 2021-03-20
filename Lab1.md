@@ -19,11 +19,11 @@ For Lab-1, you will first set up your working environment and then implement cod
 + Deadline: TBA
 ```
 
-## 1. Getting started 
+## Getting started 
 
 Your environment should be set up from Lab 0. We will making changes in the same codebase. If you did not recieve full marks for the previous lab, please reach out to the TA to get the correct implementation of the previous files.
 
-## 2. Code Comprehension Exercise 
+## Part-1 Pre-lab Questions 
 
 Before starting the coding portion of this assignment, we are going to observe certain things about the code base first.
 
@@ -47,7 +47,7 @@ There is a field in each Env struct for another struct callled VmxGuestInfo.
 
 3. What assembly instruction initializes the vmcs pointer? 
 
-## 3. Coding Assignment (Making a Guest Environment)
+## Part-2 Coding Assignment (Making a Guest Environment)
 
 Currently, `make run-vmm-nox` will panic the kernel as the code that detects support for vmx and extended page table support is not yet implemented. You will see the following error and you will fix this in Lab-1:
 ```

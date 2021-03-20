@@ -1,6 +1,6 @@
 ## Project-0
 
-In this project, you will implement a few features to become familar with the environment and the system that you will work with for the rest of the course. 
+In this project, you will implement a few features to become familar with the environment and the system that you will work with for the rest of the course. For Lab-0, you will first set up your working environment and then implement code to demonstrate understanding of the codebase. 
 
 
 ### Introduction 
@@ -19,12 +19,8 @@ The README series is broken down into 4 parts:
 3. [Environments](https://github.com/vijay03/cs360v-f21/blob/master/environments.md) which will help you in understanding what exactly is an environment, and some details about the environment structure which is used in sys_ept_map() and the trapframe structure.
 4. [File System](https://github.com/vijay03/cs360v-f21/blob/master/file_system.md) which will help you in understanding the second part of the lab, where we handle vmcalls related to reading and writing of data to a disk.
 
-## Lab-0
 
-For Lab-0, you will first set up your working environment and then implement code to demonstrate understanding of the codebase. 
-
-
-## 1. Getting Started
+## Part-1 Setup and Getting Started
 
 You will need to use your laptop for this project. Because the lab computers do not have easy root access, and we are trying to write a hypervisor, it is easiest to use a class VM for a standardized project experience. 
 
@@ -64,20 +60,33 @@ You can run the vmm from the shell by typing:
 $ make run-vmm-nox
 ```
 
-## 2. Coding Assignment 
+Next, set up GDB for the JOS computers using the guide founds in the [tools page](https://github.com/vijay03/cs360v-f20/blob/master/tools.md). Additionally, here is a reference sheet for [GDB commands](https://users.ece.utexas.edu/~adnan/gdb-refcard.pdf)
+
+In order to run JOS in GDB, there are specialized make commands in order to attach GDB to the process. Run 
+
+```
+make run-vmm-nox-gdb
+```
+
+NOTE: For this lab, you have to use REMOTE DEBUGGING via GDB. It will appear like the command is hanging when run, but you must open a new terminal tab to run gdb. In the gdb prompt, run:
+
+```
+target remote localhost:25001
+```
+Port 25002 should also work.
+
+You may see 
+```
+Remote debugging using localhost:25001
+Ignoring packet error, continuing...
+```
+
+Which should be normal. 
+
+## Part-2 Pre-lab Questions
 
 ### Tracing code with GDB and pointer arithmetic review 
-
 To begin, we'd like you to get familar with using GDB. GDB is a great tool for debugging system level programs because it gives you the ability to see what is happening at a low level. 
-
-First, set up GDB for the JOS computers using the guide founds in the [tools page](https://github.com/vijay03/cs360v-f20/blob/master/tools.md). Additionally, here is a reference sheet for [GDB commands](https://users.ece.utexas.edu/~adnan/gdb-refcard.pdf)
-
-In order to run JOS in GDB, run 
-
-```
-gdb .\ yadda yadda 
-r - args 
-```
 
 First, place a breakpoint at `env_pop_tf(struct Trapframe *tf)` in `kern/env.c`
 This function restores the register values in the Trapframe with the 'iret' instruction.
@@ -110,6 +119,7 @@ movq $0, (%rsp)
 ```
 Why might this throw an error? 
 
+## Part-3 Coding Exercise 
 
 ### Track number of runs for an env
 

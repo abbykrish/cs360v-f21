@@ -26,14 +26,15 @@ How do we know our VM has EPT support?
 2. ELF Headers:  
 What is an ELF header? 
 What does it do? 
-Can you find what the ELF format for our VM is?
 
 3. Set a breakpoint at the function `load_icode()` in env.c
 What do you notice about the Proghdr object? 
 What kinds of metadata does the object have? 
 What is this function doing? It is described in the function header, but try to put it in your own words. 
 
-4. The first function you implement in this project will have you check many errors, prior to the actual function logic. What are some of the reasons why we must do this in OS level code, the user never sees? 
+4. In our codebase, load_icode() does the work of loading the ELF binary image into the environment's user memory. Looking at this function, where does the memory for the Env get allocated? Where does the memory for the ELF header get allocated? Hint: you may have to check out what some constant values mean. 
+
+5. The first function you implement in this project will have you check many errors, prior to the actual function logic. What are some of the reasons why we must do this in OS level code, the user never sees? 
 
 Recommended files to look through before starting:
 

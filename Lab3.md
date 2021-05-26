@@ -39,6 +39,14 @@ Implement the `VMX_VMCALL_MBMAP` case of the function `handle_vmcall()` in `vmm/
 
 ![Image of Map](https://github.com/abbykrish/cs360v-f21/blob/main/figures/memmap.jpg)
 
+
+This section mostly involves accurately setting up all of the metadata of the memory map 
+
+You will need to make `memory_map_t` objects for each of the sections specified in the diagram above, and write them into the mbinfo memory using the memset or memcpy functions. Look in the multiboot.h file to see all the fields in each of the struct you need to fill out. 
+
+FOR EXAMPLE: after you have initialized all the data in each struct, you can initialize the sections like this:` memcpy(addr, &lomap, sizeof(memory_map_t));`
+
+
 #### Part-4 CPUID
 
 Once the guest gets a little further in boot, it will attempt to discover whether the CPU supports long mode, using the cpuid instruction. Our VMCS is configured to trap on this instruction, so that we can emulate it---hiding the presence of vmx, since we have not implemented emulation of vmx in software. Now you will see an error of the form `kernel panic on CPU 0 at ../vmm/vmexits.c:262: cpuid not implemented`.
@@ -51,4 +59,5 @@ Implement `handle_cpuid()` in vmm/vmexits.c. `handle_cpuid()` should emulate a c
 Please submit your code for part-1 and part-2 via gitolite. To mark your submission, please have a commit labelled "Lab 3 submission. 0/1/.. slip days used.". You can modify and add a dummy file for this commit if you want. We will consider the last such commit for evaluation. The deadline for lab-3 of project-1 is:
 
 ```diff
+Deadline: TBD
 ```

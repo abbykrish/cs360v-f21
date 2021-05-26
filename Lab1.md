@@ -13,8 +13,6 @@ The README series is broken down into 4 parts:
 4. [File System](https://github.com/vijay03/cs360v-f20/blob/master/file_system.md) which will help you in understanding the second part of the lab, where we handle vmcalls related to reading and writing of data to a disk.
 
 ## Lab-1
-
-For Lab-1, you will first set up your working environment and then implement code for making the guest environment.
 ```diff
 + Deadline: TBA
 ```
@@ -31,21 +29,21 @@ The first thing you should do is look through the helper functions in `inc/x86.h
 
 The first method you will be editing is `vmx_check_support()` in `vmm/vmx.c`. The function currently calls the `cpuid` function. The parameters to the function are the addresses of the integers initialized in the line before. Set a breakpoint at the `cpuid()`function call, and step through the function. 
 
-The `cpuid` assembly instruction can be used determine the availability of different processor features. Depending on the values in the registers EAX, EBX, ECX and EDX, you can query for all kinds of information about the processor. 
+1. What does the `cpuid()` assembly instruction do in this function? 
 
-1. How is the function providing values back to you to use? 
+2. How is the function providing values back to you to use? 
 
-2. What are the results of the function? 
+3. What are the results of eax, ecx, and ebx values in hexadecimal? Hint: [you can print program variables from GDB](https://sourceware.org/gdb/current/onlinedocs/gdb/Variables.html)
 
-3. Change the info value to 0, and output the return values out as a string instead of as integers. What do you observe? 
+4. Change the info value to 0, and output the return values out as a string instead of as integers. Hint: interpret the values as hexadecimal values, and then convert them to a string, in the order `ebx, ecx, edx`. What do you observe? 
 
-There is a field in each Env struct for another struct callled VmxGuestInfo. 
+There is a reference in each Env struct for another struct called VmxGuestInfo. 
 
-1. What kind of information does this struct hold? 
+5. What kind of information does this struct hold? 
 
-2. From the Intel guide, find out what the vmcs pointer in this struct stands for, and what it purpose it serves. 
+6. From the Intel guide, find out what the vmcs pointer in this struct stands for, and what it purpose it serves. 
 
-3. What assembly instruction initializes the vmcs pointer? 
+7. What assembly instruction initializes the vmcs pointer? 
 
 ## Part-2 Coding Assignment (Making a Guest Environment)
 

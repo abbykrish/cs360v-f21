@@ -1,13 +1,9 @@
-## Project-0
+## Lab 0 Intro
+In this lab, you will implement a few features to become familar with the environment and the system that you will work with for the rest of the course. For Lab-0, you will first set up your working environment and then implement code to demonstrate understanding of the codebase. 
 
-In this project, you will implement a few features to become familar with the environment and the system that you will work with for the rest of the course. For Lab-0, you will first set up your working environment and then implement code to demonstrate understanding of the codebase. 
+Throughout these labs, you will gradually build all of the pieces required to build a hypervisor. Hypervisors provide the means of running multiple OSes managed by just one entity, a single machine. We must make sure our hypervisor does several things, such as provide OS-level isolation for users and allocating and switching out resources efficiently. 
 
-
-### Introduction 
-In this project, throughout the labs, you will gradually build all of the pieces required to build a hypervisor. Hypervisors provide the means of running multiple OSes managed by just one entity, a single machine. We must make sure our hypervisor does several things, such as provide OS-level isolation for users and allocating and switching out resources efficiently. 
-
-
-You will use the JOS operating system running on QEMU for this project. Check the [tools page](https://github.com/vijay03/cs360v-f20/blob/master/tools.md) for an overview on JOS and useful commands of QEMU. You will work on them over the next 3 or 4 lab assignments and at the end, you will launch a JOS-in-JOS environment. You will cover many tasks, such as interfacing with the hardware with system calls, handling vmexits (similar to a context switch), and mapping the bootloader in memory. 
+You will use the JOS operating system running on QEMU for this project. Check the [tools page](https://github.com/vijay03/cs360v-f20/blob/master/tools.md) for an overview on JOS and useful commands of QEMU. You will work on them over the next 3 or 4 lab assignments and at the end, you will launch a JOS-in-JOS environment. You will cover many tasks, such as interfacing with the hardware with system calls, handling vmexits (similar to a context switch), and mapping the bootloader in memory.  
 
 ### Background
 
@@ -18,7 +14,6 @@ The README series is broken down into 4 parts:
 2. [Virtual Memory](https://github.com/vijay03/cs360v-f21/blob/master/virtual_memory.md) which will help you in understanding the second part - where we transfer the multiboot structure from the host to the guest, for the guest to understand how much memory it is allocated and how much it can use. This part also contains details about segmentation and paging, which are a good background for the project in general.
 3. [Environments](https://github.com/vijay03/cs360v-f21/blob/master/environments.md) which will help you in understanding what exactly is an environment, and some details about the environment structure which is used in sys_ept_map() and the trapframe structure.
 4. [File System](https://github.com/vijay03/cs360v-f21/blob/master/file_system.md) which will help you in understanding the second part of the lab, where we handle vmcalls related to reading and writing of data to a disk.
-
 
 ## Part-1 Setup and Getting Started
 
@@ -31,19 +26,19 @@ For lab-0, you will use a virtual machine with the Debian Jessie operating syste
 
 #### Setting up a Virtual Machine and Other Essentials
 
-1. Download the compressed [VM image](https://www.cs.utexas.edu/~vijay/teaching/project1.tar.gz) (3.4 GB) on your personal laptops (with QEMU and KVM enabled). 
+1. Download the compressed [VM image] TBD (3.4 GB) on your personal laptops (with QEMU and KVM enabled). 
 
 2. Download a Virtual Machine software: VMWare Fusion [here for students](https://my.vmware.com/web/vmware/evalcenter?p=fusion-player-personal) or Virtual Box. 
 3. Load ova into whichever software you are using [link](https://help.okta.com/en/prod/Content/Topics/Access-Gateway/deploy-vmwareworkstation.htm)
 4.  Begin running VM. To log into the VM, you can either use
-username: user
+username: osboes
 password: user
 
 username: root
 password: root
 
 5.  Run `ip addr` to retrieve the IP address of the machine. 
-6.  Open a new terminal tab on your computer, and ssh into the machine. You can do this with `ssh -p 22 user@IP_ADDRESS`
+6.  Open a new terminal tab on your computer, and ssh into the machine. You can do this with `ssh -p 22 osboxes@IP_ADDRESS`
 7.  You can locate into the project folder now. It should be available on your VM, with the necessary libraries. 
 
 #### Running JOS VMM
@@ -60,7 +55,22 @@ You can run the vmm from the shell by typing:
 $ make run-vmm-nox
 ```
 
-Next, set up GDB for the JOS computers using the guide founds in the [tools page](https://github.com/vijay03/cs360v-f20/blob/master/tools.md). Additionally, here is a reference sheet for [GDB commands](https://users.ece.utexas.edu/~adnan/gdb-refcard.pdf)
+Next, we will start gdb. We will be using GDB a lot throughout these labs. It is an indispensible tool for systems programming and debugging. This lab will help introduce you to it. Here is a helpful reference sheet for [GDB commands](https://users.ece.utexas.edu/~adnan/gdb-refcard.pdf)
+
+GDB should already be set up for you, but if you want to use a different machine, here is a way to set up GDB for the JOS computers. [GDB setup](https://github.com/vijay03/cs360v-f20/blob/master/tools.md). 
+
+To start gdb, simply type 
+```
+gdb
+```
+In the command prompt. 
+
+Normally, you would specify the executable, but because this is a VM, for this lab, you have to use REMOTE DEBUGGING via GDB. Because of this, you will see the prompt (you do not have to type this) run:
+
+```
+target remote localhost:25000
+```
+It will appear like the command is hanging, but it is simply waiting for the process to start.
 
 In order to run JOS in GDB, there are specialized make commands in order to attach GDB to the process. Run 
 
@@ -68,28 +78,30 @@ In order to run JOS in GDB, there are specialized make commands in order to atta
 make run-vmm-nox-gdb
 ```
 
-NOTE: For this lab, you have to use REMOTE DEBUGGING via GDB. It will appear like the command is hanging when run, but you must open a new terminal tab to run gdb. In the gdb prompt, run:
+After this, you should see 
 
 ```
-target remote localhost:25000
+warning: A handler for the OS ABI "GNU/Linux" is not built into this configuration
+of GDB.  Attempting to continue with the default i8086 settings.
+
+The target architecture is assumed to be i8086
+[f000:fff0]    0xffff0:	ljmp   $0xf000,$0xe05b
+0x0000fff0 in ?? ()
++ symbol-file obj/kern/kernel
+Hardware assisted breakpoint 1 at 0x1000e5: file kern/bootstrap.S, line 147.
 ```
 
+You can then proceed to continue the executable with c (continue) or stepi (executes next instruction)
 
-You may see 
-```
-Remote debugging using localhost:25001
-Ignoring packet error, continuing...
-```
 
-Which should be normal. 
+## Pre-lab Questions
 
-## Part-2 Pre-lab Questions
-
-### Tracing code with GDB and pointer arithmetic review 
 To begin, we'd like you to get familar with using GDB. GDB is a great tool for debugging system level programs because it gives you the ability to see what is happening at a low level. 
 
 First, place a breakpoint at `env_pop_tf(struct Trapframe *tf)` in `kern/env.c`
+
 This function restores the register values in the Trapframe with the 'iret' instruction.
+
 An IRET instruction returns from the OS to the application program which made the system call. The IRET also makes a change back to User Mode.
 
 Observe the register values, and note them down. 
@@ -98,26 +110,34 @@ Observe the register values, and note them down.
 
 2. Which register contains the next assembly instruction to execute? What is the value you see? Is this an address or a constant value? 
 
-Using the answer from the previous question, what are the next 5 instructions that will be executed? What are the hex codes of those functions? 
+3. Using the answer from the previous question, what are the next 5 instructions that will be executed? What are the hex codes of those functions? 
 
 As you may notice, the function calls a c function `__asm __volatile()`. The asm statement allows you to include assembly instructions directly within C code. The `volatile` keyword simply tells the assembler not to optimize this instruction away. 
 
-Using the register values you observed, list what the changed registers will look like after the instructions execute. Note what the difference is between the different move instructions.
+4. Explain what the following assembly instructions are doing, line by line. 
+```
+push   %rbp
+
+mov    %rsp,%rbp
+
+push   %rbx
+
+sub    $0x18,%rsp
+```
+
+5. Using the stepi functionality in GDB, which will execute one instruction at a time, what do the registers look like after this?
+
+Now, if I were to call this instruction:
 
 ```
 movq %0, %rsp
-movw (%rsp), %es
-addq $16, %rsp
-addq $16, %rsp
 ```
 
-You can check your work using the `stepi` functionality in GDB, which will execute one instruction at a time. 
+6. Why might this throw an error?
 
-Now, if I were to call this instruction:
-```
-movq $0, (%rsp)
-```
-Why might this throw an error? 
+That's it for the pre-lab! The next section will be on the coding section. 
+
+Please include a .txt or PDF document of your answers with the codebase.  
 
 ## Part-3 Coding Exercise 
 

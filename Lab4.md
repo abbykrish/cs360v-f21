@@ -22,13 +22,19 @@ You will need to do 4 tasks
 
 
 The workflow (and hints) for the ipc_* functions is as follows:
-1. `handle_vmcall()`: The `VMX_VMCALL_IPCSEND` portion should load the values from the trapframe registers. Then it ensures that the destination environment is HOST FS. If the destination environment is not HOST FS, then this function returns E_INVAL. Now, this function traverses all the environments, and sets the `to_env` to the environment ID corresponding to ENV_TYPE_FS at the host. After this is done, it converts the gpa to hva (there's a function for this!) and then calls `sys_ipc_try_send()`
-2. `handle_vmcall()` The `VMX_VMCALL_IPCRECV` portion just calls `sys_ipc_recv()`, after incrementing the program counter.
-3. `sys_ipc_try_send()` checks whether the guest is sending a message to the host or whether the host is sending a message to the guest. 
+
+1. `handle_vmcall()`: 
+	- The `VMX_VMCALL_IPCSEND` portion should load the values from the trapframe registers. 
+	- Then it ensures that the destination environment is HOST FS. If the destination environment is not HOST FS, then this function returns E_INVAL. 
+	- Now, this function traverses all the environments, and sets the `to_env` to the environment ID corresponding to ENV_TYPE_FS at the host. After this is done, it converts the gpa to hva (there's a function for this!) and then calls `sys_ipc_try_send()`
+	- The `VMX_VMCALL_IPCRECV` portion just calls `sys_ipc_recv()`, after incrementing the program counter.
+2. `sys_ipc_try_send()` checks whether the guest is sending a message to the host or whether the host is sending a message to the guest. 
 	- If the curenv type is GUEST and the destination va is below UTOP, it means that the guest is sending a message to the host and it should insert a page in the host's page table. 
 	- If the dest environment is GUEST and the source va is below UTOP, it means that the host is sending a message to the guest and it should insert a page in the EPT. 
 	- Finally, at the end of this function, if the dest environment is GUEST, then the rsi register of the trapframe should be set with 'value'.
-4. `ept_page_insert()` uses `ept_lookup_gpa` to traverse the EPT and insert a page if not present.
+3. `ept_page_insert()` uses `ept_lookup_gpa` to traverse the EPT and insert a page if not present.
+	- You will find functions like `epte_present()`, `epte_addr()`, `pa2page()` to be helpful.
+	- You will also need to update the reference counts of the PageInfo struct of the page you insert. There are more details about this in the comment above the function. 
 
 Once these steps are complete, you should have a fully running JOS-on-JOS.
 This marks the end of project-1.
